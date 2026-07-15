@@ -41,16 +41,16 @@ Salve tudo em prospector-config.json na pasta conectada, neste formato:
 }
 ```
 
-Se os dados da Cloudflare foram informados, teste a conexão seguindo a skill deploy-cloudflare: o teste roda via o script local, não direto do chat — o sandbox não alcança a API da Cloudflare (bloqueio de proxy confirmado). Garanta os arquivos do publicador (publicar-cloudflare.bat/.ps1/.command) na pasta conectada, escreva fila-publicacao.txt apontando para um projeto Astro mínimo de teste ("Funcionou!") como prospector-teste, peça UM duplo clique, e depois leia publicador-log.txt e informe a URL https://prospector-teste.pages.dev ao usuário. Se o teste falhar, diagnostique pelo log (token sem escopo Pages, account ID incorreto, wrangler/node ausente no computador do usuário) antes de concluir. Depois do teste, pode orientar a apagar o projeto rodando npx wrangler pages project delete prospector-teste --account-id="[accountId]" no mesmo terminal local.
+Se os dados da Cloudflare foram informados, teste a conexão seguindo a skill deploy-cloudflare: esse teste (e qualquer publicação futura) precisa ser feito na aba Code do Cowork, não aqui na Home, porque a Home não alcança a API da Cloudflare (bloqueio de proxy confirmado) e a aba Code tem rede irrestrita. Explique isso ao usuário e oriente: abra a aba Code, conecte a mesma pasta do projeto, e peça pra publicar um site de teste mínimo ("Funcionou!") como prospector-teste seguindo a skill deploy-cloudflare. Se der certo, a URL https://prospector-teste.pages.dev confirma token e account ID corretos. Depois do teste, pode apagar o projeto rodando npx wrangler pages project delete prospector-teste --account-id="[accountId]" (também na aba Code).
 
 ## 6. Dashboard inicial
 
 Siga a seção "Setup" da skill dashboard-leads: copie dashboard-server.py e iniciar-dashboard.bat para a raiz da pasta conectada, crie o banco prospector.db (schema da skill) e gere o dashboard.html do template. Explique ao usuário: duplo clique em iniciar-dashboard.bat abre o painel completo em http://localhost:8765 com edição/exclusão salvando no banco (requer Python no Windows; sem ele, o dashboard.html abre no modo leitura).
 
-## 7. Entregar o manual e os scripts
+## 7. Entregar o manual
 
-Copie da pasta do plugin para a pasta conectada (sobrescrevendo versões antigas): manual.html (manual do usuário) e os arquivos do publicador conforme o sistema do usuário (skill deploy-cloudflare, references) — Windows: publicar-cloudflare.bat + publicar-cloudflare.ps1; Mac: publicar-cloudflare.command; mais o iniciador do dashboard certo (iniciar-dashboard.bat ou .command). O teste de conexão do item 5 já usa esse fluxo, então nada extra a instalar aqui além de garantir que os arquivos estão na pasta. Apresente o manual.html ao usuário com a frase: "Esse é o seu manual — guarda ele que responde 90% das dúvidas."
+Copie da pasta do plugin para a pasta conectada (sobrescrevendo versões antigas): manual.html (manual do usuário) e o iniciador do dashboard certo (iniciar-dashboard.bat ou .command). Apresente o manual.html ao usuário com a frase: "Esse é o seu manual — guarda ele que responde 90% das dúvidas." Explique também, de forma resumida, a divisão de tarefas entre as abas: prospecção e redesign podem rodar na Home; publicação (deploy) precisa rodar na Code, com a mesma pasta conectada lá.
 
 ## 8. Encerrar
 
-Confirme o que foi salvo e explique o ciclo (guiando SEMPRE o próximo passo ao fim de cada comando): /prospectar, depois /redesenhar, depois /publicar, depois /proposta, com /editor opcional para ajustes manuais e o dashboard.html como painel de controle de tudo.
+Confirme o que foi salvo e explique o ciclo (guiando SEMPRE o próximo passo ao fim de cada comando): /prospectar, depois /redesenhar, depois /publicar (na aba Code), depois /proposta, com /editor opcional para ajustes manuais e o dashboard.html como painel de controle de tudo.
