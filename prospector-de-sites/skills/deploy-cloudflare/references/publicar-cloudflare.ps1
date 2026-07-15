@@ -60,7 +60,7 @@ function Log($msg) {
                                                                                                             }
                                                                                                             
                                                                                                                 Log "Publicando '$slug' a partir de '$distPath'..."
-                                                                                                                    $saida = & npx wrangler pages deploy $distPath --project-name=$slug --account-id=$accountId --branch=main --commit-dirty=true 2>&1
+                                                                                                                    $saida = & npx --yes wrangler pages deploy $distPath --project-name=$slug --account-id=$accountId --branch=main --commit-dirty=true 2>&1
                                                                                                                         $saida | Out-String | Add-Content -Path $LogPath
                                                                                                                         
                                                                                                                             if ($LASTEXITCODE -eq 0) {
