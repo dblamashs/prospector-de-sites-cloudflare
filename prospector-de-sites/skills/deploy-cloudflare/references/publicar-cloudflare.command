@@ -49,7 +49,7 @@ continue
 fi
 
 log "Publicando '$SLUG' a partir de '$DIST'..."
-npx wrangler pages deploy "$DIST" --project-name="$SLUG" --account-id="$ACCOUNT_ID" --branch=main --commit-dirty=true >> "$LOG" 2>&1
+npx --yes wrangler pages deploy "$DIST" --project-name="$SLUG" --account-id="$ACCOUNT_ID" --branch=main --commit-dirty=true >> "$LOG" 2>&1
 
 if [ $? -eq 0 ]; then
 log "OK: $SLUG publicado em https://$SLUG.pages.dev"
