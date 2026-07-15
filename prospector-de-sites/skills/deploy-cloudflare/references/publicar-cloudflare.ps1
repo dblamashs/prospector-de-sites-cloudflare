@@ -1,7 +1,8 @@
 param()
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"
 $Pasta = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $Pasta
+
 $ConfigPath = Join-Path $Pasta "prospector-config.json"
 $FilaPath = Join-Path $Pasta "fila-publicacao.txt"
 $LogPath = Join-Path $Pasta "publicador-log.txt"
@@ -11,6 +12,8 @@ function Log($msg) {
         Add-Content -Path $LogPath -Value $linha
             Write-Host $linha
             }
+
+            try {
 
             if (-not (Test-Path $ConfigPath)) {
                 Write-Host "prospector-config.json nao encontrado em $Pasta"
@@ -60,27 +63,33 @@ function Log($msg) {
                                                                                                             }
                                                                                                             
                                                                                                                 Log "Publicando '$slug' a partir de '$distPath'..."
-                                                                                                                    $saida = & npx --yes wrangler pages deploy $distPath --project-name=$slug --account-id=$accountId --branch=main --commit-dirty=true 2>&1
-                                                                                                                        $saida | Out-String | Add-Content -Path $LogPath
-                                                                                                                        
-                                                                                                                            if ($LASTEXITCODE -eq 0) {
-                                                                                                                                    Log "OK: $slug publicado em https://$slug.pages.dev"
-                                                                                                                                            $publicados += $slug
-                                                                                                                                                } else {
-                                                                                                                                                        Log "ERRO ao publicar $slug (veja detalhes acima no log)."
-                                                                                                                                                                $falhas += $slug
+                                                                                                                    cmd /c "npx --yes wrangler pages deploy `"$distPath`" --project-name=$slug --account-id=$accountId --branch=main --commit-dirty=true" 1>> "$LogPath" 2>> "$LogPath"
+                                                                                                                    
+                                                                                                                        if ($LASTEXITCODE -eq 0) {
+                                                                                                                                Log "OK: $slug publicado em https://$slug.pages.dev"
+                                                                                                                                        $publicados += $slug
+                                                                                                                                            } else {
+                                                                                                                                                    Log "ERRO ao publicar $slug (veja detalhes acima no log)."
+                                                                                                                                                            $falhas += $slug
+                                                                                                                                                                }
+                                                                                                                                                                }
+                                                                                                                                                                
+                                                                                                                                                                $dataArquivada = Get-Date -Format "yyyy-MM-dd_HHmmss"
+                                                                                                                                                                Move-Item -Path $FilaPath -Destination (Join-Path $Pasta "fila-publicada-$dataArquivada.txt") -Force
+                                                                                                                                                                
+                                                                                                                                                                Write-Host ""
+                                                                                                                                                                Write-Host "===================================="
+                                                                                                                                                                Write-Host "Publicados: $($publicados -join ', ')"
+                                                                                                                                                                if ($falhas.Count -gt 0) {
+                                                                                                                                                                    Write-Host "Falharam: $($falhas -join ', ') -- veja publicador-log.txt"
                                                                                                                                                                     }
-                                                                                                                                                                    }
-                                                                                                                                                                    
-                                                                                                                                                                    $dataArquivada = Get-Date -Format "yyyy-MM-dd_HHmmss"
-                                                                                                                                                                    Move-Item -Path $FilaPath -Destination (Join-Path $Pasta "fila-publicada-$dataArquivada.txt") -Force
-                                                                                                                                                                    
-                                                                                                                                                                    Write-Host ""
                                                                                                                                                                     Write-Host "===================================="
-                                                                                                                                                                    Write-Host "Publicados: $($publicados -join ', ')"
-                                                                                                                                                                    if ($falhas.Count -gt 0) {
-                                                                                                                                                                        Write-Host "Falharam: $($falhas -join ', ') -- veja publicador-log.txt"
-                                                                                                                                                                        }
-                                                                                                                                                                        Write-Host "===================================="
-                                                                                                                                                                        Read-Host "Pressione Enter para fechar"
-                                                                                                                                                                        
+                                                                                                                                                                    Read-Host "Pressione Enter para fechar"
+                                                                                                                                                                    
+                                                                                                                                                                    } catch {
+                                                                                                                                                                        Write-Host ""
+                                                                                                                                                                            Write-Host "ERRO INESPERADO: $_"
+                                                                                                                                                                                Add-Content -Path $LogPath -Value "ERRO INESPERADO: $_"
+                                                                                                                                                                                    Read-Host "Pressione Enter para fechar"
+                                                                                                                                                                                    }
+                                                                                                                                                                                    
