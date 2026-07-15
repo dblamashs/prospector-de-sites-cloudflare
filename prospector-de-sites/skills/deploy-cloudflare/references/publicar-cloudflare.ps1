@@ -39,6 +39,7 @@ function Log($msg) {
                                                     }
 
                                                     $env:CLOUDFLARE_API_TOKEN = $apiToken
+                                                    $env:CLOUDFLARE_ACCOUNT_ID = $accountId
 
                                                     $linhas = Get-Content $FilaPath | Where-Object { $_.Trim() -ne "" }
                                                     if ($linhas.Count -eq 0) {
@@ -63,7 +64,7 @@ function Log($msg) {
                                                                                                             }
                                                                                                             
                                                                                                                 Log "Publicando '$slug' a partir de '$distPath'..."
-                                                                                                                    $saida = cmd /c "npx --yes wrangler pages deploy `"$distPath`" --project-name=$slug --account-id=$accountId --branch=main --commit-dirty=true 2>&1"
+                                                                                                                    $saida = cmd /c "npx --yes wrangler pages deploy `"$distPath`" --project-name=$slug --branch=main --commit-dirty=true 2>&1"
                                                                                                                         $exitCode = $LASTEXITCODE
                                                                                                                             $saida | Out-String | Add-Content -Path $LogPath
                                                                                                                             
